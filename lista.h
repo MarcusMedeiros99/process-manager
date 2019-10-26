@@ -1,14 +1,19 @@
 #ifndef LISTA_H
 #define LISTA_H
+#include "horario.h"
 
+#define MAX_DESCR 51
 
-typedef struct Horario horario; //possui campos para horário no formato hh:mm:ss
+//tipos de ornenação (por prioridade ou horáio)
+enum {P, T, N};
 
 typedef struct Celula celula; //Uma struct do tipo celula define um processo
 typedef struct Lista lista;
 
 lista* criaLista();
 void insereNaLista(lista*l, int prior, horario chegada, char descricao[]);
-
+void printLista(lista* l, int tipoOrdena);
+void printNext(lista* l, int tipoOrdena);
+void destroiLista(lista* l);
 
 #endif
