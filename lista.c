@@ -4,9 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-
-
 typedef struct Celula {
 	int prior; //valor indicando prioridade que está entre 1 e 99
 	horario chegada;
@@ -62,7 +59,7 @@ void insereAux(lista* l, celula* c) {
 
 void insereNaLista(lista* l, int prior,  horario chegada, char descricao[]) {
 	celula* nova = criaCelula(prior, chegada, descricao);
-	insereAux(l, nova);
+	if (nova) insereAux(l, nova);
 }
 
 void destroiAux(celula* c) {
@@ -72,101 +69,18 @@ void destroiAux(celula* c) {
 	}
 }
 
-/*void destroiIntervalo(celula* inicio, celula* fim) {
-	celula* aux = inicio->prox;
-	free(inicio);
-	if (inicio != fim) destroiIntervalo(aux, fim);
-}*/
-
 void destroiLista(lista* l) {
 	destroiAux(l->primeiro);
 	free(l);
 }
 
-/*celula* encontraMeio(celula* inicio, celula* fim, int n) {
-	int m = (n - 1)/2;
-	for (int i = 0; i < m; i++) inicio = inicio->prox;
-	return inicio;
-}
 
-void merge(celula** inicio, celula** meio, celula** fim, int tipoOrdena) {
-	celula* inicio1 = *inicio;
-	celula* inicio2 = (*meio)->prox;
-
-	lista* lAux = criaLista();
-
-	while (inicio1 != (*meio)->prox && inicio2 != (*fim)->prox) {
-		switch (tipoOrdena) {
-			case T:
-				if ( menorQueHorario(inicio1->chegada, inicio2->chegada) ) {
-					insereNaLista(lAux, inicio1->prior, inicio1->chegada, inicio1->descricao);
-					inicio1 = inicio1->prox;
-				}
-				else {
-					insereNaLista(lAux, inicio2->prior, inicio2->chegada, inicio2->descricao);
-					inicio2 = inicio2->prox;
-				}
-			break;
-			case P:
-				if (inicio1->prior > inicio2->prior) {
-					insereNaLista(lAux, inicio1->prior, inicio1->chegada, inicio1->descricao);
-					inicio1 = inicio1->prox;
-				}
-				else {
-					insereNaLista(lAux, inicio2->prior, inicio2->chegada, inicio2->descricao);
-					inicio2 = inicio2->prox;
-				}
-			break;
-		}
-	}
-
-	while (inicio1 != (*meio)->prox) {
-		switch (tipoOrdena) {
-			case T:
-				insereNaLista(lAux, inicio1->prior, inicio1->chegada, inicio1->descricao);
-				inicio1 = inicio1->prox;
-			break;
-			case P:
-				insereNaLista(lAux, inicio1->prior, inicio1->chegada, inicio1->descricao);
-				inicio1 = inicio1->prox;
-			break;
-		}
-	}
-
-	while (inicio2 != (*fim)->prox) {
-		switch (tipoOrdena) {
-			case T:
-				insereNaLista(lAux, inicio2->prior, inicio2->chegada, inicio2->descricao);
-				inicio2 = inicio1->prox;
-			break;
-			case P:
-				insereNaLista(lAux, inicio2->prior, inicio2->chegada, inicio2->descricao);
-				inicio2 = inicio2->prox;
-			break;
-		}
-	}
-
-	celula* afterFim = (*fim)->prox;
-	destroiIntervalo(*inicio, *fim);
-
-	*inicio = lAux->primeiro;
-	*fim = lAux->ultimo;
-	(*fim)->prox = afterFim;
-
-	free(lAux);
-}
-
-void ordenaAux(celula** inicio, celula** fim, int n, int tipoOrdena) {
-	if (inicio != fim && inicio != NULL) {
-		celula* meio = encontraMeio(*inicio, *fim, n);
-		int m = (n - 1)/2;
-		ordenaAux(inicio, &meio, m, tipoOrdena);
-		ordenaAux(&(meio->prox), fim, n - m, tipoOrdena);
-		merge(inicio, &meio, fim, tipoOrdena);
-		
-	}
-}*/
-
+//Função que divide a lista iniciada em "c" em duas listas de tamanho igual.
+//A listas são retornadas em "esquerda" e "direita". Dois ponteiros auxiliares
+//são inicializados no começo da lista e ambos vão percorrendo em direção ao
+//fim do vetor, mas um deles percorre dois nós de cada vez. Quando um desses
+//ponteiros chega ao fim da lista, o outro está na metade, e a função termina
+//colocando o último nó da lista da esquerda apontando para NULL.
 void divideLista(celula* c, celula** esquerda, celula** direita) {
 	celula* fim;
 	celula* meio;
@@ -188,6 +102,8 @@ void divideLista(celula* c, celula** esquerda, celula** direita) {
 
 }
 
+//Função que retorna uma lista ordenada intercalando duas listas ordenadas
+//A flag tipoOrdena indica se a ordenação ocorre por horário (T) ou prioridade (P)
 celula* merge(celula* esquerda, celula* direita, int tipoOrdena) {
 
 	celula* nova = NULL;
@@ -196,7 +112,7 @@ celula* merge(celula* esquerda, celula* direita, int tipoOrdena) {
 	if (!direita) return esquerda;
 
 	switch (tipoOrdena) {
-		case P:
+		case P: //Ordenação por prioridade
 			if (esquerda->prior > direita->prior) {
 				nova = esquerda;
 				nova->prox = merge(esquerda->prox, direita, tipoOrdena);
@@ -206,7 +122,7 @@ celula* merge(celula* esquerda, celula* direita, int tipoOrdena) {
 				nova->prox = merge(esquerda, direita->prox, tipoOrdena);
 			}
 		break;
-		case T:
+		case T: //Ordenação por horário
 			if (menorQueHorario(esquerda->chegada, direita->chegada)) {
 				nova = esquerda;
 				nova->prox = merge(esquerda->prox, direita, tipoOrdena);
@@ -220,18 +136,7 @@ celula* merge(celula* esquerda, celula* direita, int tipoOrdena) {
 	return nova;
 }
 
-void printCelula(celula* c) {
-	printf("%02d %02d:%02d:%02d %s\n", c->prior, c->chegada.hh, c->chegada.mm, c->chegada.ss, c->descricao);
-}
-
-void printAux(celula* c) {
-	while (c != NULL) {
-		printCelula(c);
-		c = c->prox;
-	}
-	printf("\n");
-}
-
+//Função de ordenação da lista utilizando mergesort.
 void ordenaAux(celula** c, int tipoOrdena) {
 	celula* esquerda;
 	celula* direita;
@@ -250,18 +155,30 @@ void ordenaLista(lista* l, int tipoOrdena) {
 	
 }
 
-void printLista(lista* l, int tipoOrdena) {
-	if (tipoOrdena != N)
-	ordenaLista(l, tipoOrdena);
-
-	celula* it = l->primeiro;
-	while (it != NULL) {
-		printCelula(it);
-		it = it->prox;
-	}
-	printf("\n");
+//Função auxiliar para imprimir uma celula da lista
+void printCelula(celula* c) {
+	printf("%02d %02d:%02d:%02d %s\n", c->prior, c->chegada.hh, c->chegada.mm, c->chegada.ss, c->descricao);
 }
 
+//Imprime a lista de acordo com a flag tipoOrdena. A flag tipoOrdena indica
+//se a ordenação ocorre por horário (T) ou prioridade (P) ou se não há
+//ordenação (N)
+void printLista(lista* l, int tipoOrdena) {
+	if (l) {
+		if (tipoOrdena != N) ordenaLista(l, tipoOrdena);
+
+		celula* it = l->primeiro;
+		while (it != NULL) {
+			printCelula(it);
+			it = it->prox;
+		}
+		printf("\n");
+	}
+}
+
+//Função que encontra elemento de maior prioridade na lista. Como a 
+//lista é simplesmente encadeada, é útil guardar o elemento imediatamente
+//anterior a fim de realizar remoções
 void encontraMaxPrior(lista *l, celula** anterior, celula** alvo) {
 	celula* ant = NULL;
 	celula* atual = l->primeiro;
@@ -278,6 +195,9 @@ void encontraMaxPrior(lista *l, celula** anterior, celula** alvo) {
 	}
 }
 
+//Função que encontra elemento de menor horário de chegada na lista. Como a 
+//lista é simplesmente encadeada, é útil guardar o elemento imediatamente
+//anterior a fim de realizar remoções
 void encontraMinHorario(lista* l, celula** anterior, celula** alvo) {
 	celula* ant = NULL;
 	celula* atual = l->primeiro;
@@ -295,6 +215,8 @@ void encontraMinHorario(lista* l, celula** anterior, celula** alvo) {
 	}
 }
 
+//Função que realiza impressão do elemento da lista de maior
+//prioridade (tipoOrdena = P) ou de menor horário de chegada (tipoOrdena = T)
 void printNext(lista* l, int tipoOrdena) {
 	if (l != NULL && l->tam != 0) {
 		celula* anterior;

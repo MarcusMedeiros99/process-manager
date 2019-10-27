@@ -7,7 +7,6 @@
 //tipos de ornenação (por prioridade ou horáio)
 enum {P, T, N};
 
-typedef struct Celula celula; //Uma struct do tipo celula define um processo
 typedef struct Lista lista;
 
 lista* criaLista();
