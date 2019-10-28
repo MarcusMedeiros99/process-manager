@@ -8,6 +8,7 @@ typedef struct Horario {
 } horario;
 
 int menorQueHorario(horario a, horario b);
+int igualHorario (horario a, horario b);
 
 
 #endif

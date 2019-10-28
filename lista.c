@@ -233,3 +233,35 @@ void printNext(lista* l, int tipoOrdena) {
 		printf("\n");
 	}
 }
+
+void rmCelula(lista* l, int tipoOrdena) {
+	celula* anterior;
+	celula* alvo;
+
+	switch (tipoOrdena) {
+		case P:
+			encontraMaxPrior(l, &anterior, &alvo);
+		break;
+		case T:
+			encontraMinHorario(l, &anterior, &alvo);
+		break;
+	}
+	anterior->prox = alvo->prox;
+	free(alvo);
+}
+
+void changeHorario(lista* l, horario anterior, horario novo) {
+	if (l) {
+		celula* it = l->primeiro;
+		while (it != NULL && !igualHorario(anterior, it->chegada)) it = it->prox;
+		if (it != NULL) it->chegada = novo;
+	}
+}
+
+void changePrior(lista* l, int anterior, int novo) {
+	if (l) {
+		celula* it = l->primeiro;
+		while (it != NULL && it->prior != anterior) it = it->prox;
+		if (it != NULL) it->prior = novo;
+	}
+}

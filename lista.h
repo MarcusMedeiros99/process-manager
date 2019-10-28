@@ -13,6 +13,9 @@ lista* criaLista();
 void insereNaLista(lista*l, int prior, horario chegada, char descricao[]);
 void printLista(lista* l, int tipoOrdena);
 void printNext(lista* l, int tipoOrdena);
+void rmCelula(lista* l, int tipoOrdena);
+void changeHorario(lista* l, horario anterior, horario novo);
+void changePrior(lista* l, int anterior, int novo);
 void destroiLista(lista* l);
 
 #endif

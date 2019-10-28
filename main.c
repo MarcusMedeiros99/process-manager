@@ -3,7 +3,7 @@
 #include <string.h>
 #include "lista.h"
 
-int main(int argc, char const *argv[]) {
+int main() {
 	char cmd[8];
 	horario horarioAux;
 	int prior;
@@ -32,6 +32,26 @@ int main(int argc, char const *argv[]) {
 				scanf(" -%c", &op);
 				if (op == 'p') printNext(processos, P);
 				else if (op == 't') printNext(processos, T);
+			break;
+			case 'e':
+				scanf(" -%c", &op);
+				if (op == 'p') rmCelula(processos, P);
+				else if (op == 't') rmCelula(processos, T);
+			break;
+			case 'c':
+				scanf(" -%c", &op);
+				if (op == 'p') {
+					int pAnterior;
+					int pNovo;
+					scanf(" %d|%d", &pAnterior, &pNovo);
+					changePrior(processos, pAnterior, pNovo);
+				}
+				else if (op == 't') {
+					horario hAnterior;
+					horario hNovo;
+					scanf(" %d:%d:%d|%d:%d:%d", &hAnterior.hh, &hAnterior.mm, &hAnterior.ss, &hNovo.hh, &hNovo.mm, &hNovo.ss);
+					changeHorario(processos, hAnterior, hNovo);
+				}
 			break;
 			case 'q':
 				destroiLista(processos);
